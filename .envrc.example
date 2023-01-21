@@ -1,0 +1,13 @@
+export TRELLO_BASE_URL=https://api.trello.com
+export TRELLO_API_KEY=hello
+export TRELLO_USER_TOKEN=world
+
+export TRELLO_BOARD_ID=id
+
+export TRELLO_ISSUES_LIST_ID=id
+export TRELLO_GENERAL_LIST_ID=id
+
+export TRELLO_BUG_LABEL_ID=id
+export TRELLO_MAINTENANCE_LABEL_ID=id
+export TRELLO_RESEARCH_LABEL_ID=id
+export TRELLO_TEST_LABEL_ID=id
