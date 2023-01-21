@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"trello-cards-creator-oc/models"
+	"trello-cards-creator-oc/utils"
 )
 
 type Cards struct {
+	TrelloClient *utils.TrelloClient
 }
 
 func (cd *Cards) CreateCard(c *gin.Context) {
@@ -29,14 +30,15 @@ func (cd *Cards) CreateCard(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		fmt.Println(issueCard)
+		cd.TrelloClient.CreateIssueCard(&issueCard)
 	case models.Bug:
 		var bugCard models.BugCard
 		if err := c.ShouldBindJSON(&bugCard); err != nil {
+			//algo := err.(validator.ValidationErrors)[0].
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		fmt.Println(bugCard)
+		cd.TrelloClient.CreateBugCard(&bugCard)
 	case models.Task:
 		var taskCard models.TaskCard
 		if err := c.ShouldBindJSON(&taskCard); err != nil {
@@ -44,7 +46,7 @@ func (cd *Cards) CreateCard(c *gin.Context) {
 			return
 		}
 
-		fmt.Println(taskCard)
+		cd.TrelloClient.CreateTaskCard(&taskCard)
 	}
 
 	c.JSON(http.StatusOK, gin.H{

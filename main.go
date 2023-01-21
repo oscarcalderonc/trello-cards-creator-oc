@@ -18,9 +18,9 @@ func main() {
 	}
 
 	router := gin.Default()
-
-	appRoutes := routes.Routes{}
-
+	appRoutes := routes.Routes{
+		Env: &environment,
+	}
 	appRoutes.InitializeRoutes(router)
 
 	err = router.Run(":" + environment.ServerPort)
