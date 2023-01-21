@@ -1,3 +1,5 @@
+export SERVER_PORT=3030
+
 export TRELLO_BASE_URL=https://api.trello.com
 export TRELLO_API_KEY=hello
 export TRELLO_USER_TOKEN=world
