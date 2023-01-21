@@ -19,7 +19,7 @@ func (rt *Routes) InitializeRoutes(r *gin.Engine) {
 func cards(g *gin.RouterGroup, env *models.Environment) {
 	trelloClient, _ := utils.NewTrelloClient(env)
 	cardsHandler := handlers.Cards{
-		TrelloClient: trelloClient,
+		TrelloApi: trelloClient,
 	}
 	g.POST("/:cardType", cardsHandler.CreateCard)
 }

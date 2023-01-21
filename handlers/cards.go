@@ -8,7 +8,7 @@ import (
 )
 
 type Cards struct {
-	TrelloClient *utils.TrelloClient
+	TrelloApi utils.TrelloApi
 }
 
 func (cd *Cards) CreateCard(c *gin.Context) {
@@ -31,7 +31,7 @@ func (cd *Cards) CreateCard(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		newCard, err = cd.TrelloClient.CreateIssueCard(&issueCard)
+		newCard, err = cd.TrelloApi.CreateIssueCard(&issueCard)
 	case models.Bug:
 		var bugCard models.BugCard
 		if err := c.ShouldBindJSON(&bugCard); err != nil {
@@ -39,7 +39,7 @@ func (cd *Cards) CreateCard(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		newCard, err = cd.TrelloClient.CreateBugCard(&bugCard)
+		newCard, err = cd.TrelloApi.CreateBugCard(&bugCard)
 	case models.Task:
 		var taskCard models.TaskCard
 		if err := c.ShouldBindJSON(&taskCard); err != nil {
@@ -47,7 +47,7 @@ func (cd *Cards) CreateCard(c *gin.Context) {
 			return
 		}
 
-		newCard, err = cd.TrelloClient.CreateTaskCard(&taskCard)
+		newCard, err = cd.TrelloApi.CreateTaskCard(&taskCard)
 	}
 
 	if err != nil {

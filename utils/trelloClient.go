@@ -17,6 +17,12 @@ type TrelloMember struct {
 	Username string `json:"username"`
 }
 
+type TrelloApi interface {
+	CreateBugCard(c *models.BugCard) (*TrelloCard, error)
+	CreateTaskCard(c *models.TaskCard) (*TrelloCard, error)
+	CreateIssueCard(c *models.IssueCard) (*TrelloCard, error)
+}
+
 type TrelloClient struct {
 	trelloApi  *models.TrelloApi
 	trelloIds  *models.TrelloIds
