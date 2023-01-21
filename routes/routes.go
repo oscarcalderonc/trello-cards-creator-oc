@@ -10,9 +10,15 @@ type Routes struct {
 
 func (rt *Routes) InitializeRoutes(r *gin.Engine) {
 	cards(r.Group("/cards"))
+	healthcheck(r.Group("/health"))
 }
 
 func cards(g *gin.RouterGroup) {
 	cardsHandler := handlers.Cards{}
 	g.POST("/:cardType", cardsHandler.CreateCard)
+}
+
+func healthcheck(g *gin.RouterGroup) {
+	healthcheckHandler := handlers.HealthCheck{}
+	g.GET("/", healthcheckHandler.Healthz)
 }

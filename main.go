@@ -2,25 +2,28 @@ package main
 
 import (
 	"fmt"
+	"github.com/Netflix/go-env"
 	"github.com/gin-gonic/gin"
+	"log"
 	"os"
+	"trello-cards-creator-oc/models"
 	"trello-cards-creator-oc/routes"
 )
 
 func main() {
-	router := gin.Default()
+	var environment models.Environment
+	_, err := env.UnmarshalFromEnviron(&environment)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status": "Ok",
-		})
-	})
+	router := gin.Default()
 
 	appRoutes := routes.Routes{}
 
 	appRoutes.InitializeRoutes(router)
 
-	err := router.Run(":3030")
+	err = router.Run(":" + environment.ServerPort)
 
 	if err != nil {
 		fmt.Println("Shutting down...")
