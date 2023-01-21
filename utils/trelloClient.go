@@ -24,8 +24,6 @@ type TrelloClient struct {
 	authParams string
 }
 
-var cardPosition = "top"
-
 func NewTrelloClient(env *models.Environment) (*TrelloClient, error) {
 	return &TrelloClient{
 		baseUrl:    env.TrelloApi.TrelloBaseUrl,
@@ -36,26 +34,25 @@ func NewTrelloClient(env *models.Environment) (*TrelloClient, error) {
 }
 
 type TrelloCard struct {
+	Id          string   `json:"id"`
 	Name        string   `json:"name"`
 	Description string   `json:"desc"`
-	Position    string   `json:"pos"`
 	Labels      []string `json:"idLabels"`
 	Members     []string `json:"idMembers"`
 	List        string   `json:"idList"`
 }
 
-func (tc *TrelloClient) CreateIssueCard(issue *models.IssueCard) error {
+func (tc *TrelloClient) CreateIssueCard(issue *models.IssueCard) (*TrelloCard, error) {
 	trelloCard := TrelloCard{
 		Name:        issue.Title,
 		Description: issue.Description,
 		List:        tc.trelloIds.TrelloIssuesListId,
-		Position:    cardPosition,
 	}
 
 	return tc.createTrelloCard(&trelloCard)
 }
 
-func (tc *TrelloClient) CreateBugCard(bug *models.BugCard) error {
+func (tc *TrelloClient) CreateBugCard(bug *models.BugCard) (*TrelloCard, error) {
 	cardName := fmt.Sprintf("bug-%s-%v", faker.Word(), faker.CCNumber())
 
 	members, _ := tc.getBoardMembers()
@@ -69,14 +66,13 @@ func (tc *TrelloClient) CreateBugCard(bug *models.BugCard) error {
 		Name:        cardName,
 		Description: bug.Description,
 		List:        tc.trelloIds.TrelloGeneralListId,
-		Position:    cardPosition,
 		Members:     []string{members[randomMemberIdx].Id},
 		Labels:      []string{tc.trelloIds.TrelloBugLabelId},
 	}
 	return tc.createTrelloCard(&trelloCard)
 }
 
-func (tc *TrelloClient) CreateTaskCard(task *models.TaskCard) error {
+func (tc *TrelloClient) CreateTaskCard(task *models.TaskCard) (*TrelloCard, error) {
 
 	var categoryLabel string
 
@@ -89,40 +85,42 @@ func (tc *TrelloClient) CreateTaskCard(task *models.TaskCard) error {
 		categoryLabel = tc.trelloIds.TrelloTestLabelId
 	}
 	trelloCard := TrelloCard{
-		Name:     task.Title,
-		List:     tc.trelloIds.TrelloGeneralListId,
-		Position: cardPosition,
-		Labels:   []string{categoryLabel},
+		Name:   task.Title,
+		List:   tc.trelloIds.TrelloGeneralListId,
+		Labels: []string{categoryLabel},
 	}
 
 	return tc.createTrelloCard(&trelloCard)
 }
 
-func (tc *TrelloClient) createTrelloCard(card *TrelloCard) error {
+func (tc *TrelloClient) createTrelloCard(card *TrelloCard) (*TrelloCard, error) {
 	payload, _ := json.Marshal(card)
 
 	url := fmt.Sprintf("%s/1/cards?%s", tc.baseUrl, tc.authParams)
-
 	res, err := http.Post(url, "application/json", bytes.NewReader(payload))
-	fmt.Println(res.Body)
+	defer res.Body.Close()
 
-	return err
+	body, err := io.ReadAll(res.Body)
+	var newTrelloCard TrelloCard
+	if err = json.Unmarshal(body, &newTrelloCard); err != nil {
+		return nil, err
+	}
+
+	return &newTrelloCard, err
 }
 
 func (tc *TrelloClient) getBoardMembers() ([]TrelloMember, error) {
 
 	url := fmt.Sprintf("%s/1/boards/%s/members?%s", tc.baseUrl, tc.trelloIds.TrelloBoardId, tc.authParams)
-
 	res, err := http.Get(url)
-
-	fmt.Println(res.Body)
-
 	defer res.Body.Close()
-	body, err := io.ReadAll(res.Body)
 
+	body, err := io.ReadAll(res.Body)
 	var members []TrelloMember
 
-	err = json.Unmarshal(body, &members)
+	if err = json.Unmarshal(body, &members); err != nil {
+		return nil, err
+	}
 
 	return members, err
 }

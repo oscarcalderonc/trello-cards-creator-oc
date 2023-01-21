@@ -23,7 +23,7 @@ func (ct CardType) IsValid() error {
 	case Issue, Bug, Task:
 		return nil
 	}
-	return errors.New("Invalid card type")
+	return errors.New("invalid card type")
 }
 
 type IssueCard struct {
