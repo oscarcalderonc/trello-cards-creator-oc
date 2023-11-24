@@ -12,7 +12,7 @@ This will install the required dependencies, generate a copy of the environment 
 - Then, it is necessary to configure the following environment variables:
 
 |Name|Description|Default value|
-|---|---|---|---|---|
+|---|---|---|---|
 |TRELLO_BASE_URL| Base URL of Trello REST API|https://api.trello.com|
 |TRELLO_API_KEY| API Key for the power up created on [https://trello.com/power-ups/](https://trello.com/power-ups/)|-|
 |TRELLO_USER_TOKEN| Generated based on the API Key|-|
