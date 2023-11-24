@@ -3,7 +3,7 @@ Web service that interfaces with trello with certain rules in the middle to crea
 
 ## How to make it run?
 
-- Run the following command:  
+- Run the following command:
 ```  
 make setup  
 ```  
